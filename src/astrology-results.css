@@ -1,0 +1,70 @@
+.astro-calculation{margin:28px 0 32px;min-width:0;color:#d6dfec}
+.calculation-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.calculation-heading h3{font:500 24px Georgia,serif;color:#f0d79d;margin:9px 0}
+.engine-badge{display:inline-flex;align-items:center;min-height:44px;border:1px solid #7c6c4d;border-radius:6px;padding:9px 12px;color:#efd49a;font-size:12px;text-decoration:none;overflow-wrap:anywhere}
+.engine-badge:focus-visible,.calculation-details summary:focus-visible{outline:3px solid #f0d79d;outline-offset:3px}
+.calculation-timestamp,.birth-facts{font-size:13px;line-height:1.9;margin:12px 0;color:#bec9dc}
+.birth-time-notice{border:1px solid #a28b5d;border-left:4px solid #d8ba79;border-radius:8px;background:#d8ba7910;padding:16px;margin:20px 0;font-size:13px;line-height:1.9}
+.birth-time-notice strong{color:#f0d79d;display:block}
+.birth-time-notice p{margin:7px 0 0}
+.natal-highlights{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:22px 0}
+.natal-highlights>div{border:1px solid #d8ba7944;border-radius:8px;padding:16px;background:#101b3433;min-width:0}
+.natal-highlights small,.natal-highlights b,.natal-highlights span{display:block}
+.natal-highlights small{font-size:12px;color:#bbc6d7;line-height:1.7}
+.natal-highlights b{font-size:22px;color:#efd49a;margin:6px 0;font-weight:500;line-height:1.5}
+.natal-highlights span{font-size:13px;color:#c3cde0}
+.natal-highlights .lunar-highlight b{font-size:17px}
+.transit-section{margin-top:24px}
+.transit-section h4{font-size:19px!important;margin:0 0 10px!important}
+.calculation-note{font-size:12px;line-height:1.85;color:#aebed3;margin:12px 0;overflow-wrap:anywhere}
+.transit-date-label{font-size:14px!important}
+.astro-calculation .transit-date-label select{min-height:56px;width:100%;max-width:100%;font-size:16px;touch-action:manipulation}
+.sample-lunar{border-left:2px solid #d8ba7966;padding-left:12px;font-size:13px;line-height:1.9;color:#cdd8e8;margin:18px 0}
+.planet-table-wrap{border:1px solid #d8ba7944;border-radius:9px;overflow:hidden;min-width:0}
+.planet-table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:14px;text-align:left}
+.planet-table caption{text-align:left;padding:14px 13px;font-size:12px;line-height:1.8;color:#c4d1e1;background:#14223c}
+.planet-table thead{background:#0e1b33;color:#e2ca94}
+.planet-table th,.planet-table td{padding:12px 13px;vertical-align:top;border-bottom:1px solid #d8ba7923;overflow-wrap:anywhere;line-height:1.7}
+.planet-table th:first-child{width:28%}
+.planet-table th{font-weight:500}
+.planet-table tbody th{color:#e4d3ad}
+.planet-table tbody tr:last-child>*{border-bottom:0}
+.planet-table tbody tr:nth-child(even){background:#0e1b332f}
+.planet-table strong{display:block;font-weight:500;color:#f1e1be}
+.planet-table small,.position-degrees{display:block;font-size:12px;color:#bccbde}
+.planet-number{display:inline-block;color:#d8ba79;margin-right:7px;font-size:15px}
+.calculation-details{border:1px solid #d8ba7944;border-radius:9px;margin:14px 0;background:#0f1e361f}
+.calculation-details>summary{cursor:pointer;min-height:56px;padding:17px 16px;color:#e6d3a3;font-size:15px;line-height:1.6;touch-action:manipulation}
+.calculation-details[open]>summary{border-bottom:1px solid #d8ba7933}
+.calculation-details>.calculation-note{margin:14px 16px}
+.house-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));list-style:none;padding:0;margin:14px 16px;gap:10px}
+.house-list li{border:1px solid #d8ba7933;border-radius:6px;padding:12px;min-width:0}
+.house-list b,.house-list span{display:block;font-size:13px;line-height:1.8}
+.house-list b{color:#e5d3aa;font-weight:500}
+.house-list span{color:#b8c7dc}
+.house-list p{font-size:12px;line-height:1.85;color:#b9c9df;margin:7px 0 0;overflow-wrap:anywhere}
+.taksa-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px}
+.taksa-list>div{background:#0e1b3344;border:1px solid #d8ba7933;border-radius:6px;padding:10px;min-width:0}
+.taksa-list dt{font-size:12px;color:#c5d0e1}
+.taksa-list dd{font-size:14px;color:#e3cb94;margin:5px 0 0}
+.transit-changes{list-style:none;margin:14px 16px;padding:0}
+.transit-changes li{display:flex;align-items:baseline;gap:8px 14px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid #d8ba7923;font-size:13px;line-height:1.7}
+.transit-changes li:last-child{border-bottom:0}
+.transit-changes time{width:100%;font-size:12px;color:#b9c8db}
+.transit-changes b{font-weight:500;color:#ead6aa}
+.transit-changes span{color:#c6d2e3}
+.calculation-method{padding-top:14px;border-top:1px solid #d8ba7933}
+@media(max-width:650px){
+  .natal-highlights{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .natal-highlights>div{padding:12px}
+  .natal-highlights .lunar-highlight{grid-column:1/-1}
+  .natal-highlights b{font-size:19px}
+  .engine-badge{font-size:11px}
+  .planet-table{font-size:12px}
+  .planet-table th,.planet-table td{padding:10px 7px}
+  .planet-table th:first-child{width:29%}
+  .planet-table small,.position-degrees{font-size:11px}
+  .planet-number{margin-right:4px;font-size:13px}
+  .house-list{grid-template-columns:1fr}
+  .taksa-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+}

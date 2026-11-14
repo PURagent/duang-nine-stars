@@ -36,3 +36,9 @@ html{color-scheme:dark}body{margin:0}button:focus-visible,input:focus-visible,se
 }
 
 .start-reading{display:block;width:max-content;margin:24px auto;text-decoration:none;font-size:16px;line-height:30px;min-width:210px;touch-action:manipulation}.reading{scroll-margin-top:20px}
+/* Keep the approved non-animated interaction, including card reveals. */
+.astro .front,.astro .card{animation:none;transition:none}
+.astro .card:hover{transform:none}
+.credits{max-width:450px;line-height:1.8}
+.astro footer a{color:#e1ca92;text-underline-offset:3px}
+.astro footer a:focus-visible{outline:3px solid #f0d79d;outline-offset:3px}

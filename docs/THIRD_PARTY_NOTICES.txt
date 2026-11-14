@@ -1,0 +1,76 @@
+ดวงชะตา ๙ ดาว — Third-party notices
+
+1. thai-astrology 0.3.2
+
+Source: https://github.com/kongesque/thai-astrology
+Package: https://www.npmjs.com/package/thai-astrology/v/0.3.2
+The application bundles the published package without modifying its formulas.
+
+MIT License
+
+Copyright (c) 2026 Kongesque
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+2. GeoNames location data
+
+The thai-astrology package adapts provincial-seat and city WGS84 coordinates,
+place names, and timezone identifiers from GeoNames. These adapted data are
+included with the library. This application uses the library's Thai province
+records, rather than precise user/device location or a user's street address.
+
+Attribution: GeoNames, https://www.geonames.org/
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+License URL: https://creativecommons.org/licenses/by/4.0/
+Changes: selection and adaptation into the thai-astrology data format by the
+upstream library; this application does not modify the underlying coordinates.
+
+Original datasets and metadata:
+https://download.geonames.org/export/dump/TH.zip
+https://download.geonames.org/export/dump/countryInfo.txt
+https://download.geonames.org/export/dump/cities15000.zip
+https://download.geonames.org/export/dump/timeZones.txt
+https://download.geonames.org/export/dump/readme.txt
+
+3. React, React DOM, and Scheduler
+
+Source: https://github.com/facebook/react
+Bundled source-file notices are also retained in assets/app.js.LEGAL.txt.
+
+MIT License
+
+Copyright (c) Meta Platforms, Inc. and affiliates.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
