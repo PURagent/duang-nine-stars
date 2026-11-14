@@ -1,0 +1,58 @@
+.fortune-reading{min-width:0;color:#dbe2ee;line-height:1.95;overflow-wrap:anywhere}
+.fortune-reading p{margin:0 0 14px;font-size:16px}
+.fortune-reading .fortune-introduction{display:block;max-width:none;margin:0;padding:0 0 26px;border:0;border-bottom:1px solid #d8ba7944}
+.fortune-reading .fortune-kicker{margin:0 0 8px;font-size:13px;letter-spacing:.07em;color:#d8ba79}
+.fortune-introduction h3{font-size:clamp(25px,4vw,32px);font-weight:500;line-height:1.6;color:#f1dbad;margin:0 0 12px}
+.fortune-reading .fortune-context{font-size:13px;color:#b9c8dc;margin-bottom:25px}
+.fortune-context span{display:block}
+.fortune-reading .fortune-greeting{font-size:18px;color:#f1e4cb;margin-bottom:16px}
+.fortune-introduction>p:last-child{margin-bottom:0}
+.fortune-reading section>h4{font-size:19px;font-weight:500;line-height:1.7;margin:0 0 16px;color:#f0d79d}
+.fortune-card-section{margin:28px 0}
+.fortune-cards{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.fortune-card-reading{display:grid;grid-template-columns:64px minmax(0,1fr);align-items:start;gap:18px;padding:22px;border:1px solid #d8ba7944;border-radius:12px;background:#101b343b;min-width:0}
+.fortune-card-symbol{display:grid;place-items:center;width:64px;min-height:88px;font-size:34px;color:#eddaa9;border:3px double #d8ba7980;border-radius:7px;background:#d8ba790b}
+.fortune-card-body{min-width:0}
+.fortune-reading .fortune-card-position{font-size:12px;color:#c6b68e;margin:0 0 4px}
+.fortune-card-body h5{font-size:20px;font-weight:500;color:#f2dfb5;line-height:1.6;margin:0 0 12px}
+.fortune-card-body>p:last-of-type{margin-bottom:14px}
+.fortune-card-details{border-top:1px solid #d8ba7933}
+.fortune-card-details>summary{min-height:56px;padding:14px 0;font-size:14px;line-height:1.9;color:#e7d0a0;cursor:pointer;touch-action:manipulation}
+.fortune-card-details>summary:focus-visible{outline:3px solid #f0d79d;outline-offset:3px;border-radius:4px}
+.fortune-card-details dl{margin:0 0 4px;padding:0}
+.fortune-card-details dl>div{margin:0 0 14px}
+.fortune-card-details dt{font-size:13px;font-weight:600;color:#e2cea5}
+.fortune-card-details dd{font-size:15px;margin:3px 0 0;color:#cbd6e6}
+.fortune-balance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:28px 0}
+.fortune-balance>section{min-width:0;border-radius:10px;padding:20px;border:1px solid #d8ba7944;background:#12223b66}
+.fortune-balance .fortune-cautions{border-color:#b7a28b55;background:#c1a27a08}
+.fortune-balance ul{padding:0;margin:0;list-style:none}
+.fortune-balance li+li{border-top:1px solid #d8ba792a;padding-top:16px;margin-top:16px}
+.fortune-balance strong{font-size:15px;font-weight:600;line-height:1.8;color:#eddfc3}
+.fortune-balance p{font-size:15px;margin:7px 0 0}
+.fortune-next-steps{border-left:3px solid #d8ba79;padding:2px 0 2px 20px;margin:30px 0}
+.fortune-next-steps ol{margin:0;padding-left:24px}
+.fortune-next-steps li{padding-left:5px;font-size:16px;line-height:1.95}
+.fortune-next-steps li+li{margin-top:10px}
+.fortune-next-steps li::marker{color:#e6c989;font-weight:600}
+.fortune-astro-note{padding:22px 0;border-top:1px solid #d8ba7933;border-bottom:1px solid #d8ba7933}
+.fortune-reading .fortune-astro-note h4{font-size:16px;color:#cdbc98;margin-bottom:12px}
+.fortune-astro-note p{font-size:14px;color:#bbcadd;margin-bottom:12px}
+.fortune-astro-note p:last-child{margin-bottom:0}
+.fortune-closing{margin:26px 0 20px;padding:18px 20px;border-radius:8px;background:#d8ba7911;border-left:2px solid #d8ba7988}
+.fortune-reading .fortune-closing p{font-size:17px;color:#f0ddba;margin:0;line-height:1.95}
+.fortune-reading .fortune-disclosure{font-size:12px;line-height:1.9;color:#b3c0d2;margin:0}
+@media(max-width:650px){
+  .fortune-reading p{font-size:16px}
+  .fortune-introduction h3{font-size:25px}
+  .fortune-reading .fortune-greeting{font-size:17px}
+  .fortune-card-reading{grid-template-columns:minmax(0,1fr);gap:14px;padding:18px 16px}
+  .fortune-card-symbol{width:52px;min-height:64px;font-size:29px}
+  .fortune-card-body h5{font-size:20px}
+  .fortune-balance{grid-template-columns:minmax(0,1fr)}
+  .fortune-balance>section{padding:18px 16px}
+  .fortune-next-steps{padding-left:15px}
+  .fortune-closing{padding:16px}
+  .fortune-reading .fortune-disclosure{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){.fortune-reading *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}

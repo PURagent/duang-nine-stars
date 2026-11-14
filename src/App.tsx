@@ -2,17 +2,17 @@ import { useState, useEffect, useRef } from 'react';
 import { bangkokDate, birthDateISO, daysInMonth } from './birth-date.js';
 import { PROVINCES, buildReading } from './astrology.js';
 import AstrologyResults from './AstrologyResults';
+import FortuneReading from './FortuneReading';
+import { TAROT_CARDS as cards } from './tarot-cards.js';
+import { interpretReading } from './fortune-reading.js';
 import './horoscope.css';
 const symbols=['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
-const majors=['ผู้เริ่มต้น','นักมายากล','มหาปุโรหิตหญิง','จักรพรรดินี','จักรพรรดิ','นักบวช','คู่รัก','ราชรถ','ความเข้มแข็ง','ฤๅษี','กงล้อแห่งโชคชะตา','ความยุติธรรม','ผู้เสียสละ','การเปลี่ยนผ่าน','ความสมดุล','พันธนาการ','หอคอย','ดวงดาว','พระจันทร์','พระอาทิตย์','การตื่นรู้','โลก'];
-const meanings=['เปิดรับจุดเริ่มต้น','ใช้ศักยภาพของตน','เชื่อสัญชาตญาณพร้อมตรวจข้อมูล','ดูแลการเติบโต','จัดระบบและขอบเขต','เรียนรู้จากประสบการณ์','เลือกตามคุณค่าของตน','มุ่งมั่นไปข้างหน้า','อดทนและเมตตา','ทบทวนตัวเอง','รับจังหวะเปลี่ยนแปลง','ตัดสินใจอย่างเป็นธรรม','เปลี่ยนมุมมอง','วางสิ่งเก่า','สร้างความสมดุล','ระวังความยึดติด','ตั้งหลักใหม่','รักษาความหวัง','ตรวจความไม่ชัดเจน','มองเห็นโอกาส','ทบทวนบทเรียน','ปิดงานให้สมบูรณ์'];
-const suits=['ไม้เท้า','ถ้วย','ดาบ','เหรียญ'],ranks=['หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า','สิบ','เด็กถือไพ่','อัศวิน','ราชินี','ราชา'],phases=['จุดเริ่มต้น','ทางเลือก','การเติบโต','ความมั่นคง','บททดสอบ','การช่วยเหลือ','การประเมิน','ความคืบหน้า','ผลจากความพยายาม','ความสำเร็จ','การเรียนรู้','การลงมือทำ','การดูแล','ภาวะผู้นำ'];
-const cards=[...majors.map((name,i)=>({name,meaning:meanings[i],icon:symbols[i%12]})),...suits.flatMap((s,j)=>ranks.map((r,i)=>({name:r+' '+s,meaning:phases[i]+'ด้าน'+['แรงบันดาลใจ','ความรู้สึก','เหตุผล','ทรัพย์สิน'][j],icon:['♧','♡','⚔','◇'][j]})))];
 const topics=[['ภาพรวมชีวิต','✧'],['ความรัก','♡'],['การงาน','⚒'],['การเงิน','◈'],['โชคลาภ','✦']];
 function draw(){const a=Array.from({length:78},(_,i)=>i);for(let i=77;i>0;i--){const n=new Uint32Array(1);crypto.getRandomValues(n);const j=n[0]%(i+1);[a[i],a[j]]=[a[j],a[i]]}return a.slice(0,3)}
 export default function Page(){
 const [step,S]=useState(0),[day,setDay]=useState(''),[month,setMonth]=useState(''),[year,setYear]=useState(''),[time,T]=useState(''),[province,P]=useState('ชลบุรี'),[topic,Q]=useState('ภาพรวมชีวิต'),[period,R]=useState('วันนี้'),[deck,D]=useState<number[]>([]),[flips,F]=useState(0),[error,E]=useState(''),[now,N]=useState<Date|null>(null),[copied,C]=useState(false);
 const [reading,setReading]=useState<ReturnType<typeof buildReading>|null>(null);
+const [interpretation,setInterpretation]=useState<ReturnType<typeof interpretReading>|null>(null);
 const headingRef = useRef<HTMLHeadingElement>(null);
 const previousStep = useRef(0);
 const todayISO = bangkokDate();
@@ -38,7 +38,9 @@ function start(){
   try {
     const instant=new Date();
     const result=buildReading({date:{year:Number(year),era:'CE',month:Number(month),day:Number(day)},time,province,period,now:instant});
-    setReading(result);N(instant);D(draw());F(0);E('');S(2);
+    const chosen=draw();
+    const narrative=interpretReading({reading:result,cardIds:chosen,topic});
+    setReading(result);setInterpretation(narrative);N(instant);D(chosen);F(0);E('');S(2);
   } catch (cause) {
     E(cause instanceof Error?cause.message:'คำนวณไม่สำเร็จ กรุณาตรวจสอบข้อมูลแล้วลองใหม่');
   }
@@ -74,20 +76,14 @@ return <main className="astro"><header><div className="logo"><span>✺</span><di
   <div className="actions"><button className="outline" onClick={()=>{E('');S(0)}}>← ย้อนกลับ</button><button className="gold" onClick={start}>เข้าสู่สำรับไพ่ ↗</button></div>
 </div>}
 {step===2&&<div className="panel"><p className="intro">สับไพ่ 78 ใบแล้ว แตะไพ่ทีละใบเพื่อเปิดไพ่ 3 ตำแหน่ง</p><div className="deck">{deck.map((id,i)=><button className={'card '+((flips & (1 << i)) !== 0?'flipped':'')} key={i} aria-label={'เปิดไพ่ใบที่ '+(i+1)} aria-pressed={!!(flips & (1 << i))} onClick={()=>F(value=>value | (1 << i))}>{(flips & (1 << i)) !== 0?<div className="front"><small>✦ {i+1} ✦</small><strong>{cards[id].icon}</strong><b>{cards[id].name}</b></div>:<div className="back"><strong>✺</strong><small>๙ ดาว</small></div>}</button>)}</div><div className="labels"><span>สถานการณ์</span><span>สิ่งที่ควรใส่ใจ</span><span>แนวโน้ม</span></div><p className="count">เปิดแล้ว {[0,1,2].filter(i=>flips & (1 << i)).length} / 3 ใบ</p><div className="actions"><button className="outline" onClick={()=>S(1)}>← ย้อนกลับ</button><button className="gold" disabled={flips!==7} onClick={()=>S(3)}>อ่านคำทำนาย ↗</button></div></div>}
-{step===3&&reading&&<div className="panel result">
-  <div className="resulthead"><div className="eyebrow">✧ YOUR COSMIC READING ✧</div><h3>{topic} · {period}</h3><p>{today} · จังหวัดเกิด {province}</p></div>
-  <AstrologyResults reading={reading}/>
-  <h3>ไพ่ทั้งสามที่คุณเปิดได้</h3>
-  <div className="results">{deck.map((id,i)=><div key={i}><div className="mini">{cards[id].icon}</div><b>{cards[id].name}</b><small>{['สถานการณ์','สิ่งที่ควรใส่ใจ','แนวโน้ม'][i]}</small><p>{cards[id].meaning}</p></div>)}</div>
-  <div className="guidance">
-    <div className="eyebrow">YOUR GUIDANCE</div><h3>สารจากดวงดาวและไพ่</h3>
-    <p>สำหรับ<b>{topic}</b>ในช่วง<b>{period}</b> ไพ่ใบแรกชวนพิจารณา “{cards[deck[0]].meaning}” ไพ่ใบที่สองสะท้อน “{cards[deck[1]].meaning}” และไพ่ใบสุดท้ายแนะนำให้มองเรื่อง “{cards[deck[2]].meaning}”</p>
-    <p>ตามสูตรสุริยยาตร์ อาทิตย์{reading.birth.timeKnown?'กำเนิด':'อ้างอิงเวลา 12:00 น.'}ของคุณอยู่ราศี<b>{reading.natal.planets.sun.signName}</b>{reading.natal.ascendant&&<> ลัคนาอยู่ราศี<b>{reading.natal.ascendant.signName}</b></>} ส่วนอาทิตย์จร ณ เวลาเปิดคำอ่านอยู่ราศี<b>{reading.snapshots[0].planets.sun.signName}</b> ใช้ข้อมูลเหล่านี้เป็นมุมมองประกอบการทบทวน ไม่ใช่ข้อสรุปว่าเหตุการณ์ใดจะเกิดขึ้นแน่นอน</p>
-    <p className="note">ส่วนคำอ่านและไพ่เป็นข้อความชวนคิดที่เว็บไซต์เรียบเรียงเอง แยกจากผลคำนวณดาวของไลบรารี</p>
-    <blockquote>✦ ไพ่ไม่ได้กำหนดชะตา การตัดสินใจของคุณยังสำคัญที่สุด</blockquote>
-  </div>
+{step===3&&reading&&interpretation&&<div className="panel result">
+  <FortuneReading interpretation={interpretation}/>
+  <details className="technical-reading">
+    <summary>ดูข้อมูลคำนวณดาวและปฏิทินที่ใช้ประกอบคำอ่าน</summary>
+    <AstrologyResults reading={reading}/>
+  </details>
   <p className="note">เพื่อความบันเทิงและสะท้อนคิด สุริยยาตร์เป็นวิธีคำนวณตามตำรา ไม่ใช่หลักฐานรับรองความแม่นของคำทำนาย และไม่ใช่คำแนะนำด้านสุขภาพหรือการเงิน</p>
-  <div className="actions"><button className="outline" onClick={()=>{S(0);D([]);F(0);C(false);setReading(null)}}>↻ ดูดวงใหม่</button><button className="gold" onClick={share}>{copied?'คัดลอกลิงก์แล้ว ✓':'แชร์ให้เพื่อน ↗'}</button></div>
+  <div className="actions"><button className="outline" onClick={()=>{S(0);D([]);F(0);C(false);setReading(null);setInterpretation(null)}}>↻ ดูดวงใหม่</button><button className="gold" onClick={share}>{copied?'คัดลอกลิงก์แล้ว ✓':'แชร์ให้เพื่อน ↗'}</button></div>
 </div>}</section>
 <section className="method"><div className="eyebrow">THE RITUAL</div><h2>เมื่อดวงดาวพบกับไพ่</h2><div className="features">
   <div><span>01</span><h3>พื้นดวงสุริยยาตร์</h3><p>สมผุสดาวทั้งสิบ ลัคนาและภพเมื่อทราบเวลาเกิด</p></div>

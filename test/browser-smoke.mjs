@@ -58,8 +58,20 @@ try {
   async function reveal() {
     await page.getByRole('button',{name:'เข้าสู่สำรับไพ่ ↗'}).tap();
     assert.ok(await page.getByRole('button',{name:'อ่านคำทำนาย ↗'}).isDisabled());
+    assert.match(await page.locator('.count').innerText(),/0 \/ 3/);
     for (const n of [3,1,2]) await page.getByRole('button',{name:`เปิดไพ่ใบที่ ${n}`,exact:true}).tap();
+    const chosenNames = await page.locator('.deck .front b').allTextContents();
     await page.getByRole('button',{name:'อ่านคำทำนาย ↗'}).tap();
+    await page.getByRole('heading',{name:'แม่หมอขออ่านภาพรวมให้คุณฟัง'}).waitFor();
+    assert.deepEqual(await page.locator('.fortune-card-body h5').allTextContents(),chosenNames);
+    assert.equal(await page.locator('.fortune-card-reading').count(),3);
+    assert.equal(await page.locator('.fortune-next-steps li').count(),3);
+    assert.match(await page.locator('.fortune-greeting').innerText(),/แม่หมอ/);
+    assert.match(await page.locator('.fortune-disclosure').innerText(),/อัตโนมัติ/);
+    assert.ok(await page.locator('.fortune-opportunities').isVisible());
+    assert.ok(await page.locator('.fortune-cautions').isVisible());
+    assert.equal(await page.locator('.technical-reading').getAttribute('open'),null);
+    await page.locator('.technical-reading>summary').tap();
     await page.getByRole('heading',{name:'แผนที่ดาวของคุณ'}).waitFor();
     assert.equal(await page.locator('.planet-table tbody tr').count(),10);
   }
@@ -69,9 +81,15 @@ try {
   }
 
   await page.getByRole('button',{name:'ถัดไป — เลือกเรื่องที่อยากรู้ ↗'}).tap();
+  await page.getByRole('button',{name:'การเงิน',exact:true}).tap();
+  await page.getByRole('button',{name:'เข้าสู่สำรับไพ่ ↗'}).tap();
+  await page.getByRole('button',{name:'เปิดไพ่ใบที่ 1',exact:true}).tap();
+  assert.match(await page.locator('.count').innerText(),/1 \/ 3/);
+  await page.getByRole('button',{name:'← ย้อนกลับ',exact:true}).tap();
   await page.getByRole('button',{name:'การงาน',exact:true}).tap();
   await page.getByRole('button',{name:'7 วัน',exact:true}).tap();
   await reveal();
+  assert.match(await page.locator('.fortune-context').innerText(),/การงาน.*7 วัน/s);
   assert.ok(await page.getByText('ไม่ทราบเวลาเกิด — ใช้เวลาอ้างอิง 12:00 น.',{exact:true}).isVisible());
   assert.equal(await page.getByText('ลัคนากำเนิด',{exact:true}).count(),0);
   assert.equal(await page.locator('.house-list').count(),0);
@@ -100,11 +118,15 @@ try {
 
   // Switch the same session to a known time and the full 30-day period.
   await page.getByRole('button',{name:'↻ ดูดวงใหม่'}).tap();
+  assert.equal(await page.locator('.fortune-reading').count(),0);
   await page.locator('.optional-time > summary').tap();
   await page.getByLabel('เวลาเกิด (เว้นว่างได้)',{exact:true}).fill('08:30');
   await page.getByRole('button',{name:'ถัดไป — เลือกเรื่องที่อยากรู้ ↗'}).tap();
+  await page.getByRole('button',{name:'ความรัก',exact:true}).tap();
   await page.getByRole('button',{name:'30 วัน',exact:true}).tap();
   await reveal();
+  assert.match(await page.locator('.fortune-context').innerText(),/ความรัก.*30 วัน/s);
+  assert.match(await page.locator('.fortune-next-steps').innerText(),/ความต้องการ.*ขอบเขต/s);
   assert.ok(await page.getByText('ลัคนากำเนิด',{exact:true}).isVisible());
   assert.match(await page.locator('.natal-highlights').innerText(), /กันย์/);
   assert.equal(await page.locator('.birth-time-notice').count(),0);
