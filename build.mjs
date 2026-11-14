@@ -1,7 +1,11 @@
 import { build } from 'esbuild';
 import { mkdir, cp, writeFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 await mkdir('docs/assets',{recursive:true});
 await build({entryPoints:['src/main.tsx'],bundle:true,minify:true,format:'esm',jsx:'automatic',outfile:'docs/assets/app.js',define:{'process.env.NODE_ENV':'"production"'},legalComments:'linked'});
 await cp('public','docs',{recursive:true});
-await cp('index.html','docs/index.html');
+const version = createHash('sha256').update(await readFile('docs/assets/app.js')).update(await readFile('docs/assets/app.css')).digest('hex').slice(0,12);
+const html = (await readFile('index.html','utf8')).replace('./assets/app.js', `./assets/app.js?v=${version}`).replace('./assets/app.css', `./assets/app.css?v=${version}`);
+await writeFile('docs/index.html', html);
 await writeFile('docs/.nojekyll','');
