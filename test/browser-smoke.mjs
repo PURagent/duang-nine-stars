@@ -57,10 +57,43 @@ try {
 
   async function reveal() {
     await page.getByRole('button',{name:'เข้าสู่สำรับไพ่ ↗'}).tap();
-    assert.ok(await page.getByRole('button',{name:'อ่านคำทำนาย ↗'}).isDisabled());
-    assert.match(await page.locator('.count').innerText(),/0 \/ 3/);
-    for (const n of [3,1,2]) await page.getByRole('button',{name:`เปิดไพ่ใบที่ ${n}`,exact:true}).tap();
+    const open = page.getByRole('button',{name:'เปิดไพ่ที่เลือก',exact:true});
+    assert.ok(await open.isDisabled());
+    assert.equal(await page.locator('.picker-grid button').count(),12);
+    assert.equal(await page.locator('.picker-grid button[aria-pressed="true"]').count(),0);
+    assert.equal(await page.locator('.deck .front').count(),0);
+    assert.match(await page.locator('.picker-count').innerText(),/0 \/ 3/);
+    for (const n of [10,2]) await page.getByRole('button',{name:`ไพ่คว่ำใบที่ ${n}`,exact:true}).tap();
+    assert.ok(await open.isDisabled());
+    await page.getByRole('button',{name:'ไพ่คว่ำใบที่ 11',exact:true}).tap();
+    assert.ok(await open.isEnabled());
+    assert.equal(await page.locator('.picker-grid button:disabled').count(),9);
+    // A selected card is still removable at the limit, and reselecting puts it last.
+    await page.getByRole('button',{name:'ไพ่คว่ำใบที่ 2',exact:true}).tap();
+    assert.ok(await open.isDisabled());
+    assert.equal(await page.locator('.picker-grid button:disabled').count(),0);
+    await page.getByRole('button',{name:'ไพ่คว่ำใบที่ 2',exact:true}).tap();
+    assert.match(await page.locator('.picker-count').innerText(),/3 \/ 3/);
+    for (const width of [320,360,390,768,1280]) {
+      await page.setViewportSize({width,height:900});
+      await noOverflow();
+      for (const button of await page.locator('.picker-grid button').all()) {
+        const box = await button.boundingBox();
+        assert.ok(box.width >= 56 && box.height >= 56,`card touch target at ${width}px`);
+      }
+    }
+    await page.setViewportSize({width:360,height:800});
+    if (screenDir) {
+      await mkdir(screenDir,{recursive:true});
+      await page.locator('.card-picker').scrollIntoViewIfNeeded();
+      await page.screenshot({path:resolve(screenDir,'picker-mobile.png')});
+    }
+    await open.tap();
+    assert.equal(await page.locator('.card-picker').count(),0);
     const chosenNames = await page.locator('.deck .front b').allTextContents();
+    assert.equal(chosenNames.length,3);
+    assert.equal(new Set(chosenNames).size,3);
+    assert.match(await page.locator('.chosen-cards .count').innerText(),/10 · 11 · 2/);
     await page.getByRole('button',{name:'อ่านคำทำนาย ↗'}).tap();
     await page.getByRole('heading',{name:'แม่หมอขออ่านภาพรวมให้คุณฟัง'}).waitFor();
     assert.deepEqual(await page.locator('.fortune-card-body h5').allTextContents(),chosenNames);
@@ -83,8 +116,13 @@ try {
   await page.getByRole('button',{name:'ถัดไป — เลือกเรื่องที่อยากรู้ ↗'}).tap();
   await page.getByRole('button',{name:/การเงิน/}).tap();
   await page.getByRole('button',{name:'เข้าสู่สำรับไพ่ ↗'}).tap();
-  await page.getByRole('button',{name:'เปิดไพ่ใบที่ 1',exact:true}).tap();
-  assert.match(await page.locator('.count').innerText(),/1 \/ 3/);
+  await page.getByRole('button',{name:'ไพ่คว่ำใบที่ 1',exact:true}).tap();
+  assert.match(await page.locator('.picker-count').innerText(),/1 \/ 3/);
+  await page.getByRole('button',{name:'สับไพ่ใหม่',exact:true}).tap();
+  assert.match(await page.locator('.picker-count').innerText(),/0 \/ 3/);
+  assert.equal(await page.locator('.picker-grid button[aria-pressed="true"]').count(),0);
+  assert.ok(await page.getByRole('button',{name:'เปิดไพ่ที่เลือก',exact:true}).isDisabled());
+  await page.getByRole('button',{name:'ไพ่คว่ำใบที่ 1',exact:true}).tap();
   await page.getByRole('button',{name:'← ย้อนกลับ',exact:true}).tap();
   await page.getByRole('button',{name:/การงาน/}).tap();
   await page.getByRole('button',{name:'7 วัน',exact:true}).tap();

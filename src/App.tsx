@@ -3,18 +3,21 @@ import { bangkokDate, birthDateISO, daysInMonth } from './birth-date.js';
 import { PROVINCES, buildReading } from './astrology.js';
 import AstrologyResults from './AstrologyResults';
 import FortuneReading from './FortuneReading';
+import CardPicker from './CardPicker';
 import { TAROT_CARDS as cards } from './tarot-cards.js';
 import { interpretReading } from './fortune-reading.js';
+import { createCardSelection, toggleCardSelection, confirmCardSelection } from './card-selection.js';
 import './horoscope.css';
 const symbols=['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
 const topics=[['ภาพรวมชีวิต','✧'],['ความรัก','♡'],['การงาน','⚒'],['การเงิน','◈'],['โชคลาภ','✦']];
-function draw(){const a=Array.from({length:78},(_,i)=>i);for(let i=77;i>0;i--){const n=new Uint32Array(1);crypto.getRandomValues(n);const j=n[0]%(i+1);[a[i],a[j]]=[a[j],a[i]]}return a.slice(0,3)}
 export default function Page(){
-const [step,S]=useState(0),[day,setDay]=useState(''),[month,setMonth]=useState(''),[year,setYear]=useState(''),[time,T]=useState(''),[province,P]=useState('ชลบุรี'),[topic,Q]=useState('ภาพรวมชีวิต'),[period,R]=useState('วันนี้'),[deck,D]=useState<number[]>([]),[flips,F]=useState(0),[error,E]=useState(''),[now,N]=useState<Date|null>(null),[copied,C]=useState(false);
+const [step,S]=useState(0),[day,setDay]=useState(''),[month,setMonth]=useState(''),[year,setYear]=useState(''),[time,T]=useState(''),[province,P]=useState('ชลบุรี'),[topic,Q]=useState('ภาพรวมชีวิต'),[period,R]=useState('วันนี้'),[error,E]=useState(''),[now,N]=useState<Date|null>(null),[copied,C]=useState(false);
 const [reading,setReading]=useState<ReturnType<typeof buildReading>|null>(null);
 const [interpretation,setInterpretation]=useState<ReturnType<typeof interpretReading>|null>(null);
+const [selection,setSelection]=useState<ReturnType<typeof createCardSelection>|null>(null);
 const headingRef = useRef<HTMLHeadingElement>(null);
-const previousStep = useRef(0);
+const screen = `${step}-${step === 2 && selection?.revealed ? 'revealed' : 'selecting'}`;
+const previousScreen = useRef(screen);
 const todayISO = bangkokDate();
 const currentYear = Number(todayISO.slice(0,4));
 const birthday = birthDateISO(year, month, day);
@@ -23,11 +26,11 @@ const dayCount = daysInMonth(year, month);
 useEffect(()=>N(new Date()),[]);
 useEffect(()=>{if(day && Number(day)>dayCount)setDay('')},[day,dayCount]);
 useEffect(()=>{
-  if(previousStep.current===step)return;
-  previousStep.current=step;
+  if(previousScreen.current===screen)return;
+  previousScreen.current=screen;
   headingRef.current?.scrollIntoView({block:'start',behavior:'auto'});
   headingRef.current?.focus({preventScroll:true});
-},[step]);
+},[screen]);
 const today=now?new Intl.DateTimeFormat('th-TH',{timeZone:'Asia/Bangkok',day:'numeric',month:'long',year:'numeric'}).format(now):'วันนี้';
 function next(){
   if(!day||!month||!year){E('กรุณาเลือกวัน เดือน และปีเกิดให้ครบ');return}
@@ -38,17 +41,31 @@ function start(){
   try {
     const instant=new Date();
     const result=buildReading({date:{year:Number(year),era:'CE',month:Number(month),day:Number(day)},time,province,period,now:instant});
-    const chosen=draw();
-    const narrative=interpretReading({reading:result,cardIds:chosen,topic});
-    setReading(result);setInterpretation(narrative);N(instant);D(chosen);F(0);E('');S(2);
+    const dealt=createCardSelection();
+    setReading(result);setInterpretation(null);setSelection(dealt);N(instant);E('');S(2);
   } catch (cause) {
     E(cause instanceof Error?cause.message:'คำนวณไม่สำเร็จ กรุณาตรวจสอบข้อมูลแล้วลองใหม่');
   }
 }
+function confirmCards(){
+  if(!selection||!reading)return;
+  try {
+    const confirmed=confirmCardSelection(selection);
+    const narrative=interpretReading({reading,cardIds:confirmed.cardIds,topic});
+    setSelection(confirmed);setInterpretation(narrative);E('');
+  } catch (cause) {
+    E(cause instanceof Error?cause.message:'เปิดไพ่ไม่สำเร็จ กรุณาลองใหม่');
+  }
+}
+function shuffleCards(){
+  if(selection?.revealed)return;
+  try {setSelection(createCardSelection());setInterpretation(null);E('');}
+  catch {E('สับไพ่ไม่สำเร็จ กรุณาลองใหม่');}
+}
 async function share(){const url=new URL('./',window.location.href).href;try{if(navigator.share)await navigator.share({title:'ดวงชะตา ๙ ดาว',url,text:'มาลองเปิดไพ่ดูดวงกัน'});else{await navigator.clipboard.writeText(url);C(true)}}catch{}}
 return <main className="astro"><header><div className="logo"><span>✺</span><div>ดวงชะตา <b>๙ ดาว</b><small>THAI ASTRO · TAROT</small></div></div><small className="live">✦ เปิดรับคำทำนายทุกวัน</small></header>
 <section className="hero"><div className="eyebrow">✦ โหราศาสตร์ไทย × ไพ่ทาโรต์ ✦</div><div className="wheel"><div className="core">☼<small>ดวงดาวนำทาง</small></div>{symbols.map((x,i)=><span key={i} style={{left:(50+42*Math.sin(i*Math.PI/6))+'%',top:(50-42*Math.cos(i*Math.PI/6))+'%'}}>{x}</span>)}</div><h1>ทุกดวงดาวมีเรื่องราว<br/><em>ของคุณอยู่ในนั้น</em></h1><p>สำรวจจังหวะชีวิตผ่านแผนที่ดาว<br/>และค้นหามุมมองใหม่จากไพ่ทาโรต์ 3 ใบ</p><a className="gold start-reading" href="#reading">เริ่มดูดวง ↓</a><div className="date">✦ คำทำนายประจำวันที่ {today}</div></section>
-<section className="reading" id="reading"><div className="readhead"><div><div className="eyebrow">PERSONAL READING</div><h2 ref={headingRef} tabIndex={-1}>{['เริ่มต้นค้นหาดวงชะตา','เลือกเรื่องที่อยากรู้','เปิดไพ่แห่งชะตา','คำทำนายของคุณ'][step]}</h2></div><small>ขั้นที่ {step+1} / 4</small></div><div className="progress">{[0,1,2,3].map(i=><i key={i} className={i<=step?'on':''}/>)}</div>
+<section className="reading" id="reading"><div className="readhead"><div><div className="eyebrow">PERSONAL READING</div><h2 ref={headingRef} tabIndex={-1}>{['เริ่มต้นค้นหาดวงชะตา','เลือกเรื่องที่อยากรู้',selection?.revealed?'ไพ่ที่คุณเลือก':'เลือกไพ่ด้วยตัวคุณเอง','คำทำนายของคุณ'][step]}</h2></div><small>ขั้นที่ {step+1} / 4</small></div><div className="progress">{[0,1,2,3].map(i=><i key={i} className={i<=step?'on':''}/>)}</div>
 {step===0&&<form className="panel" onSubmit={e=>{e.preventDefault();next()}} noValidate>
   <p className="intro">เลือกวันเกิดของคุณ แล้วกดถัดไปได้เลย ไม่จำเป็นต้องระบุเวลาเกิด</p>
   <fieldset className="birth-fields"><legend>วันเดือนปีเกิด</legend>
@@ -75,7 +92,25 @@ return <main className="astro"><header><div className="logo"><span>✺</span><di
   {error&&<p className="error" role="alert">{error}</p>}
   <div className="actions"><button className="outline" onClick={()=>{E('');S(0)}}>← ย้อนกลับ</button><button className="gold" onClick={start}>เข้าสู่สำรับไพ่ ↗</button></div>
 </div>}
-{step===2&&<div className="panel"><p className="intro">สับไพ่ 78 ใบแล้ว แตะไพ่ทีละใบเพื่อเปิดไพ่ 3 ตำแหน่ง</p><div className="deck">{deck.map((id,i)=><button className={'card '+((flips & (1 << i)) !== 0?'flipped':'')} key={i} aria-label={'เปิดไพ่ใบที่ '+(i+1)} aria-pressed={!!(flips & (1 << i))} onClick={()=>F(value=>value | (1 << i))}>{(flips & (1 << i)) !== 0?<div className="front"><small>✦ {i+1} ✦</small><strong>{cards[id].icon}</strong><b>{cards[id].name}</b></div>:<div className="back"><strong>✺</strong><small>๙ ดาว</small></div>}</button>)}</div><div className="labels"><span>สถานการณ์</span><span>สิ่งที่ควรใส่ใจ</span><span>แนวโน้ม</span></div><p className="count">เปิดแล้ว {[0,1,2].filter(i=>flips & (1 << i)).length} / 3 ใบ</p><div className="actions"><button className="outline" onClick={()=>S(1)}>← ย้อนกลับ</button><button className="gold" disabled={flips!==7} onClick={()=>S(3)}>อ่านคำทำนาย ↗</button></div></div>}
+{step===2&&selection&&<>
+  {error&&<p className="error" role="alert">{error}</p>}
+  {!selection.revealed?<CardPicker
+    cardCount={selection.pool.length}
+    selectedPositions={selection.selectedPositions}
+    onToggle={position=>{setSelection(current=>current?toggleCardSelection(current,position):current);E('')}}
+    onShuffle={shuffleCards}
+    onConfirm={confirmCards}
+    onBack={()=>{E('');S(1)}}
+  />:<div className="panel chosen-cards">
+    <p className="intro">ไพ่ 3 ใบที่คุณเลือก เรียงตามลำดับที่แตะ<br/>แม่หมอจะอ่านจากไพ่ชุดนี้ พร้อมข้อมูลที่คุณให้ไว้ค่ะ</p>
+    <div className="deck">{selection.cardIds.map((id,i)=><div className="card flipped" key={id}>
+      <div className="front"><small>✦ {i+1} ✦</small><strong aria-hidden="true">{cards[id].icon}</strong><b>{cards[id].name}</b></div>
+    </div>)}</div>
+    <div className="labels"><span>สถานการณ์</span><span>สิ่งที่ควรใส่ใจ</span><span>แนวโน้ม</span></div>
+    <p className="count">เลือกจากใบที่ {selection.selectedPositions.map(position=>position+1).join(' · ')}</p>
+    <div className="actions"><button className="outline" onClick={()=>{E('');S(1)}}>← เปลี่ยนหัวข้อและเลือกใหม่</button><button className="gold" onClick={()=>S(3)}>อ่านคำทำนาย ↗</button></div>
+  </div>}
+</>}
 {step===3&&reading&&interpretation&&<div className="panel result">
   <FortuneReading interpretation={interpretation}/>
   <details className="technical-reading">
@@ -83,12 +118,12 @@ return <main className="astro"><header><div className="logo"><span>✺</span><di
     <AstrologyResults reading={reading}/>
   </details>
   <p className="note">เพื่อความบันเทิงและสะท้อนคิด สุริยยาตร์เป็นวิธีคำนวณตามตำรา ไม่ใช่หลักฐานรับรองความแม่นของคำทำนาย และไม่ใช่คำแนะนำด้านสุขภาพหรือการเงิน</p>
-  <div className="actions"><button className="outline" onClick={()=>{S(0);D([]);F(0);C(false);setReading(null);setInterpretation(null)}}>↻ ดูดวงใหม่</button><button className="gold" onClick={share}>{copied?'คัดลอกลิงก์แล้ว ✓':'แชร์ให้เพื่อน ↗'}</button></div>
+  <div className="actions"><button className="outline" onClick={()=>{S(0);setSelection(null);C(false);E('');setReading(null);setInterpretation(null)}}>↻ ดูดวงใหม่</button><button className="gold" onClick={share}>{copied?'คัดลอกลิงก์แล้ว ✓':'แชร์ให้เพื่อน ↗'}</button></div>
 </div>}</section>
 <section className="method"><div className="eyebrow">THE RITUAL</div><h2>เมื่อดวงดาวพบกับไพ่</h2><div className="features">
   <div><span>01</span><h3>พื้นดวงสุริยยาตร์</h3><p>สมผุสดาวทั้งสิบ ลัคนาและภพเมื่อทราบเวลาเกิด</p></div>
   <div><span>02</span><h3>สำรวจดาวจร</h3><p>ดูตำแหน่งดาวตามวันและเวลาไทย พร้อมเลือกดูรายวันในช่วง 7 หรือ 30 วัน</p></div>
-  <div><span>03</span><h3>ไพ่ทาโรต์</h3><p>เปิดไพ่ 3 ใบจากสำรับครบ 78 ใบ เพื่อสะท้อนมุมมองของคุณ</p></div>
+  <div><span>03</span><h3>ไพ่ที่คุณเลือกเอง</h3><p>เลือก 3 ใบจากไพ่คว่ำ 12 ใบที่สับจากสำรับครบ 78 ใบ เพื่อสะท้อนมุมมองของคุณ</p></div>
 </div></section>
 <footer>
   <div><div className="logo">✺ ดวงชะตา ๙ ดาว</div><p>อ่านดวงอย่างมีสติ ใช้ชีวิตด้วยการตัดสินใจของคุณเอง</p></div>
