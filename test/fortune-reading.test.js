@@ -37,6 +37,12 @@ test('reordering cards changes the reading and its advice, not just the card lab
   assert.notDeepEqual(a.nextSteps,b.nextSteps);
 });
 
+test('an advice phrase starting with ให้ remains natural when joined into the spoken summary', () => {
+  const result = read({cardIds:[2,14,9]});
+  assert.match(result.overview.join(' '),/ฤๅษี/);
+  assert.doesNotMatch(result.overview.join(' '),/ให้ให้/);
+});
+
 test('each selected topic changes advice and interpretation beyond its heading', () => {
   const topics = ['ภาพรวมชีวิต','ความรัก','การงาน','การเงิน','โชคลาภ'];
   const results = topics.map(topic=>read({topic}));

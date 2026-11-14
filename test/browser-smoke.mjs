@@ -81,12 +81,12 @@ try {
   }
 
   await page.getByRole('button',{name:'ถัดไป — เลือกเรื่องที่อยากรู้ ↗'}).tap();
-  await page.getByRole('button',{name:'การเงิน',exact:true}).tap();
+  await page.getByRole('button',{name:/การเงิน/}).tap();
   await page.getByRole('button',{name:'เข้าสู่สำรับไพ่ ↗'}).tap();
   await page.getByRole('button',{name:'เปิดไพ่ใบที่ 1',exact:true}).tap();
   assert.match(await page.locator('.count').innerText(),/1 \/ 3/);
   await page.getByRole('button',{name:'← ย้อนกลับ',exact:true}).tap();
-  await page.getByRole('button',{name:'การงาน',exact:true}).tap();
+  await page.getByRole('button',{name:/การงาน/}).tap();
   await page.getByRole('button',{name:'7 วัน',exact:true}).tap();
   await reveal();
   assert.match(await page.locator('.fortune-context').innerText(),/การงาน.*7 วัน/s);
@@ -122,7 +122,7 @@ try {
   await page.locator('.optional-time > summary').tap();
   await page.getByLabel('เวลาเกิด (เว้นว่างได้)',{exact:true}).fill('08:30');
   await page.getByRole('button',{name:'ถัดไป — เลือกเรื่องที่อยากรู้ ↗'}).tap();
-  await page.getByRole('button',{name:'ความรัก',exact:true}).tap();
+  await page.getByRole('button',{name:/ความรัก/}).tap();
   await page.getByRole('button',{name:'30 วัน',exact:true}).tap();
   await reveal();
   assert.match(await page.locator('.fortune-context').innerText(),/ความรัก.*30 วัน/s);
